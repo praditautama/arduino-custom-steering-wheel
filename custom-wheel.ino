@@ -1,8 +1,5 @@
-//BUTTON BOX 
 //USE w ProMicro
-//Tested in WIN10 + Assetto Corsa
-//AMSTUDIO
-//20.8.17
+//Originally by AMSTUDIO and modified by pradita.utama@gmail.com
 
 #include <Keypad.h>
 #include <Joystick.h>
