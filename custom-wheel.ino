@@ -1,21 +1,23 @@
-// use Pro Micro
-// support for Nextion 4.3 display
+//BUTTON BOX 
+//USE w ProMicro
+//Tested in WIN10 + Assetto Corsa
+//AMSTUDIO
+//20.8.17
 
 #include <Keypad.h>
 #include <Joystick.h>
 
 #define ENABLE_PULLUPS
-#define NUMROTARIES 2
-#define NUMBUTTONS 24
-#define NUMROWS 5
+#define NUMROTARIES 3
+#define NUMBUTTONS 11
+#define NUMROWS 3
 #define NUMCOLS 5
+
 
 byte buttons[NUMROWS][NUMCOLS] = {
   {0,1,2,3,4},
   {5,6,7,8,9},
-  {10,11,12,13,14},
-  {15,16,17,18,19},
-  {20,21,22,23},
+  {10,11,12,13,14}
 };
 
 struct rotariesdef {
@@ -26,10 +28,10 @@ struct rotariesdef {
   volatile unsigned char state;
 };
 
-// define PIN for rotary encoders
 rotariesdef rotaries[NUMROTARIES] {
   {2,3,26,27,0},
   {4,5,28,29,0},
+  {6,7,30,31,0},
 };
 
 #define DIR_CCW 0x10
@@ -82,7 +84,7 @@ const unsigned char ttable[7][4] = {
 };
 #endif
 
-byte rowPins[NUMROWS] = {21,20,19,18,15}; 
+byte rowPins[NUMROWS] = {19,18,15}; 
 byte colPins[NUMCOLS] = {14,16,10,9,8}; 
 
 Keypad buttbx = Keypad( makeKeymap(buttons), rowPins, colPins, NUMROWS, NUMCOLS); 
@@ -91,7 +93,7 @@ Joystick_ Joystick(JOYSTICK_DEFAULT_REPORT_ID,
   JOYSTICK_TYPE_JOYSTICK, 32, 0,
   false, false, false, false, false, false,
   false, false, false, false, false);
-  
+
 void WriteToComputer() {
   while (Serial1.available()) {
     char c = (char)Serial1.read();
@@ -105,6 +107,14 @@ static long newBaud = baud;
 void lineCodingEvent(long baud, byte databits, byte parity, byte charFormat)
 {
   newBaud = baud;
+}
+
+
+void setup() {
+  Joystick.begin();
+  rotary_init();
+  Serial.begin(baud);
+  Serial1.begin(baud);
 }
 
 int readSize = 0;
@@ -122,18 +132,7 @@ void UpdateBaudRate() {
   }
 }
 
-void setup() {
-  Joystick.begin();
-  rotary_init();
-  Serial.begin(baud);
-  Serial1.begin(baud);  
-}
-
 void loop() { 
-
-  CheckAllEncoders();
-
-  CheckAllButtons();
 
   UpdateBaudRate();
 
@@ -189,6 +188,13 @@ void loop() {
     }
 
   WriteToComputer();
+  
+  CheckAllEncoders();
+
+  CheckAllButtons();
+
+  
+
 }
 
 void CheckAllButtons(void) {
